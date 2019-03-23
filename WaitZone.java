@@ -7,4 +7,12 @@ public class WaitZone {
 
     }
 
+    public void arrive(Ship ship){
+        System.out.println("i got a ship");
+    }
+
+
+    public void depart(){
+        System.out.println("a ship is gone");
+    }
 }
