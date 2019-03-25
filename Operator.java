@@ -1,16 +1,25 @@
 public class Operator extends  Thread {
-    // the wait zone at which ships will arrive
+
     private Berth berth;
 
-    // create a new producer
+
     Operator(Berth berth) {
         this.berth = berth;
     }
 
-    // cargo ships arrive at the arrival zone at random intervals.
+
     public void run() {
         while(!isInterrupted()) {
             try {
+
+                if(berth.isActive()){
+                    System.out.println("Shield is activated.");
+                }else{
+                    System.out.println("Shield is deactivated.");
+                }
+
+                sleep(Params.debrisLapse());
+                berth.operateShield(!berth.isActive());
 
             } catch (Exception e) {
                 this.interrupt();

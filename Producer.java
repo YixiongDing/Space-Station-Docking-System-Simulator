@@ -19,12 +19,14 @@ public class Producer extends Thread {
     public void run() {
         while(!isInterrupted()) {
             try {
-                // create a new cargo ship and send it to the arrvial zone.
-                Ship ship = Ship.getNewShip();
-                arrivalZone.arrive(ship);
+                if(!arrivalZone.checkOccupied()) {
+                    // create a new cargo ship and send it to the arrvial zone.
+                    Ship ship = Ship.getNewShip();
+                    arrivalZone.arrive(ship);
 
-                // let some time pass before the next ship arrives
-                sleep(Params.arrivalLapse());
+                    // let some time pass before the next ship arrives
+                    sleep(Params.arrivalLapse());
+                }
             } catch (InterruptedException e) {
                 this.interrupt();
             }
