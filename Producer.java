@@ -16,7 +16,7 @@ public class Producer extends Thread {
     }
 
     // cargo ships arrive at the arrival zone at random intervals.
-    public void run() {
+    public synchronized void run() {
         while(!isInterrupted()) {
             try {
                 if(!arrivalZone.checkOccupied()) {
@@ -27,6 +27,7 @@ public class Producer extends Thread {
                     // let some time pass before the next ship arrives
                     sleep(Params.arrivalLapse());
                 }
+
             } catch (InterruptedException e) {
                 this.interrupt();
             }

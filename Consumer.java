@@ -20,13 +20,12 @@ public class Consumer extends Thread {
         while (!isInterrupted()) {
             try {
                 // remove a vessel that is in the departure wait zone
-                if(!departureZone.getDepartShip().equals("noship"))
-                departureZone.depart();
-                // let some time pass before the next departure
-                sleep(Params.departureLapse());
-                departureZone.updateDeparture("noship");
-
-
+                if(!departureZone.getDepartShip().equals("noship")) {
+                    departureZone.depart();
+                    // let some time pass before the next departure
+                    sleep(Params.departureLapse());
+                    departureZone.updateDeparture("noship");
+                }
             }
             catch (InterruptedException e) {
                 this.interrupt();

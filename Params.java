@@ -1,7 +1,7 @@
 import java.util.Random;
 
 class Params {
-    static final int NUM_PILOTS = 2;
+    static final int NUM_PILOTS = 3;
 
     static final int NUM_TUGS = 5;
 

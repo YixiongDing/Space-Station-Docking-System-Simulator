@@ -4,38 +4,50 @@ public class WaitZone {
     private boolean inUse = false;
     private String shipNo;
     private String departShip = "noship";
+    private boolean needPiolt = true;
 
     public WaitZone(String zoneType) {
         this.zoneType = zoneType;
 
     }
 
-    public boolean checkOccupied(){
+    public synchronized boolean checkOccupied(){
         return this.inUse;
     }
 
-    public String getShipNo(){
+    public synchronized String getShipNo(){
         return this.shipNo;
     }
 
-    public void arrive(Ship ship){
+    public synchronized void arrive(Ship ship){
         System.out.println(ship.toString()+" arrives at arrival zone");
         this.inUse = true;
         this.shipNo = ship.toString();
+        this.needPiolt = true;
     }
 
-    public void depart(){
+    public synchronized void depart(){
+        System.out.println(departShip+" departs departure zones");
+        departShip = "noship";
     }
 
-    public String getDepartShip(){
+    public synchronized String getDepartShip(){
         return this.departShip;
     }
 
-    public void updateDeparture(String departShip){
+    public synchronized boolean getNeedPilot() {
+        return this.needPiolt;
+    }
+
+    public synchronized void updateDeparture(String departShip){
         this.departShip = departShip;
     }
 
-    public void updateOccupied(boolean inUse){
+    public synchronized void updateOccupied(boolean inUse){
         this.inUse = inUse;
+    }
+
+    public synchronized void updateNeedPilot(boolean needPiolt){
+        this.needPiolt = needPiolt;
     }
 }

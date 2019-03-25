@@ -8,19 +8,19 @@ public class Berth {
         this.berthType = berthType;
     }
 
-    public boolean isActive(){
+    public synchronized boolean isActive(){
         return this.shieldOn;
     }
 
-    public boolean checkOccupied(){
+    public synchronized boolean checkOccupied(){
         return this.inUse;
     }
 
-    public void operateShield(boolean shieldOn){
+    public synchronized void operateShield(boolean shieldOn){
         this.shieldOn = shieldOn;
     }
 
-    public void updateOccupied(boolean inUse){
+    public synchronized void updateOccupied(boolean inUse){
         this.inUse = inUse;
     }
 

@@ -8,11 +8,11 @@ public class Tugs {
         this.availableTugs = tugsNum;
     }
 
-    public int checkAvailableTugs(){
+    public synchronized int checkAvailableTugs(){
         return this.availableTugs;
     }
 
-    public void updateAvailableTugs(int availableTugs){
+    public synchronized void updateAvailableTugs(int availableTugs){
         this.availableTugs = availableTugs;
     }
 

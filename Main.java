@@ -17,7 +17,6 @@ public class Main {
 
     public static void main(String [] args) throws InterruptedException {
 
-        System.out.println("hello shit");
         // generate the locations and tugs
         WaitZone arrivalZone = new WaitZone("arrival");
         WaitZone departureZone = new WaitZone("departure");
