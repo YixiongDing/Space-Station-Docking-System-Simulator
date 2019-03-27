@@ -1,5 +1,12 @@
-import com.sun.javafx.tools.packager.Param;
+/**
+ * Yixiong Ding, 671499
+ * 26 March, 2019
+ * Assignment 1a, 2019
+ * SWEN90004 Modelling Complex Software Systems
+ * The University of Melbourne
+ * */
 
+/* Acquires a newly arrived ship and required number of tugs to dock the ship. After unloaded, acquires tugs for undocking.*/
 public class Pilot extends Thread{
 
     private int pilotNo;
@@ -7,9 +14,15 @@ public class Pilot extends Thread{
     private WaitZone departureZone;
     private Tugs tugs;
     private Berth berth;
-    private String currrentState = "idle";
-    private boolean needTugs = true;
+
+    // Plot's current ship
     private String currentShip;
+
+    // Indicates what the pilot is doing at the moment
+    private String currrentState = "idle";
+
+    // Indicates the pilot needs more than available tugs
+    private boolean needTugs = true;
 
 
     public Pilot(int pilotNo, WaitZone arrivalZone, WaitZone departureZone, Tugs tugs, Berth berth) {
@@ -20,45 +33,65 @@ public class Pilot extends Thread{
         this.berth = berth;
     }
 
-    public synchronized void run() {
+    public void run() {
         while(!isInterrupted()) {
             try {
+
+                // If there's a ship in the arrival zone and requires a pilot and the pilot is free, the pilot will acquires the ship
                 if(arrivalZone.checkOccupied() && currrentState.equals("idle") && arrivalZone.getNeedPilot()){
+
+                    // Update pilot's ship and state
                     arrivalZone.updateNeedPilot(false);
                     currentShip = arrivalZone.getShipNo();
-                    currrentState = "waitTugs";
                     System.out.println("pilot " + pilotNo + " acquires " + arrivalZone.getShipNo() + ".");
+                    currrentState = "waitDockingTugs";
                 }
-                else if(currrentState.equals("waitTugs")){
+                else if(currrentState.equals("waitDockingTugs")){
+
+                    // If the available tugs are more than 3, the pilot acquires tugs
                     if(tugs.checkAvailableTugs() >= Params.DOCKING_TUGS){
-                        currrentState = "toBerth";
+
+                        // Update available tugs number
                         tugs.updateAvailableTugs(tugs.checkAvailableTugs()-Params.DOCKING_TUGS);
-                        arrivalZone.updateOccupied(false);
                         needTugs = true;
+                        currrentState = "Docking";
+
+                        // The ship gets out of the arrival zone, starts to travel to the vicinity of the berth
+                        arrivalZone.updateOccupied(false);
                         sleep(Params.TRAVEL_TIME);
+
                     }else{
+
+                        // If the available tugs are less than 3, the pilot waits
                         if(needTugs) {
                             System.out.println("pilot " + pilotNo + " acquires 3 tugs (" + tugs.checkAvailableTugs() + " available).");
                             needTugs = false;
                         }
                     }
-                }else if(currrentState.equals("toBerth") && !berth.isActive() && !berth.checkOccupied()){
-                    currrentState = "docking";
-                    berth.updateOccupied(true);
-                    tugs.updateAvailableTugs(tugs.checkAvailableTugs()+Params.DOCKING_TUGS);
-                    System.out.println(currentShip + " docks at berth.");
-                    System.out.println("pilot " + pilotNo + " releases " + Params.DOCKING_TUGS + " tugs (" +tugs.checkAvailableTugs()+" available).");
-                    sleep(Params.DOCKING_TIME);
                 }
-                else if(currrentState.equals("docking")){
-                    currrentState = "unloading";
+
+                // If there's no other ships in the berth and the shield is not activated, the pilot docks the ship
+                else if(currrentState.equals("Docking") && !berth.isActive() && !berth.checkOccupied()){
+
+                    // Update the berth is occupied
+                    berth.updateOccupied(true);
+                    System.out.println(currentShip + " docks at berth.");
+                    sleep(Params.DOCKING_TIME);
+                    tugs.updateAvailableTugs(tugs.checkAvailableTugs()+Params.DOCKING_TUGS);
+                    System.out.println("pilot " + pilotNo + " releases " + Params.DOCKING_TUGS + " tugs (" +tugs.checkAvailableTugs()+" available).");
+                    currrentState = "Unloading";
+                }
+                else if(currrentState.equals("Unloading")){
                     System.out.println(currentShip + " being unloaded.");
+                    currrentState = "waitUndockingTugs";
                     sleep(Params.UNLOADING_TIME);
                 }
-                else if(currrentState.equals("unloading")){
+                else if(currrentState.equals("waitUndockingTugs")){
+
+                    // If the available tugs are more than 2, the pilot acquires tugs
                     if(tugs.checkAvailableTugs() >= Params.UNDOCKING_TUGS){
-                        currrentState = "undocking";
                         tugs.updateAvailableTugs(tugs.checkAvailableTugs()-Params.UNDOCKING_TUGS);
+                        currrentState = "Undocking";
                     } else{
                         if(needTugs) {
                             System.out.println("pilot " + pilotNo + " acquires 2 tugs (" + tugs.checkAvailableTugs() + " available).");
@@ -66,26 +99,25 @@ public class Pilot extends Thread{
                         }
                     }
                 }
-                else if(currrentState.equals("undocking") && !berth.isActive()){
-                    currrentState = "outBerth";
-                    berth.updateOccupied(false);
+
+                // If the shield is not activated, ship can undock
+                else if(currrentState.equals("Undocking") && !berth.isActive()){
                     System.out.println(currentShip + " undocks from berth.");
                     sleep(Params.UNDOCKING_TIME);
+                    berth.updateOccupied(false);
+                    currrentState = "Departuring";
                 }
-                else if(currrentState.equals("outBerth")){
-                    departureZone.updateDeparture(currentShip);
-                    currrentState = "idle";
+                else if(currrentState.equals("Departuring")){
                     tugs.updateAvailableTugs(tugs.checkAvailableTugs()+Params.UNDOCKING_TUGS);
                     System.out.println("pilot " + pilotNo + " releases " + currentShip);
                     System.out.println("pilot " + pilotNo + " releases " + Params.UNDOCKING_TUGS + " tugs (" +tugs.checkAvailableTugs()+" available).");
+                    currrentState = "idle";
+                    departureZone.updateDeparture(currentShip);
                     sleep(Params.TRAVEL_TIME);
                 }
-            } catch (Exception e) {
+            } catch (InterruptedException e) {
                 this.interrupt();
             }
         }
     }
-
-
-
 }

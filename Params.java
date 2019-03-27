@@ -1,7 +1,16 @@
+/**
+ * Yixiong Ding, 671499
+ * 26 March, 2019
+ * Assignment 1a, 2019
+ * SWEN90004 Modelling Complex Software Systems
+ * The University of Melbourne
+ * */
+
 import java.util.Random;
 
+/* A class for various system-wide parameters, including time intervals */
 class Params {
-    static final int NUM_PILOTS = 3;
+    static final int NUM_PILOTS =2;
 
     static final int NUM_TUGS = 5;
 

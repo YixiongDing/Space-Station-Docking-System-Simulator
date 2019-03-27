@@ -1,33 +1,37 @@
 /**
- * Produces new cargo ships wanting to unload cargo at the space station.
- *
- * @author ngeard@unimelb.edu.au
- *
- */
+ * Yixiong Ding, 671499
+ * 26 March, 2019
+ * Assignment 1a, 2019
+ * SWEN90004 Modelling Complex Software Systems
+ * The University of Melbourne
+ * */
 
+// Produces new cargo ships wanting to unload cargo at the space station. *
 public class Producer extends Thread {
 
-    // the wait zone at which ships will arrive
+    // The wait zone at which ships will arrive
     private WaitZone arrivalZone;
 
-    // create a new producer
+    // Create a new producer
     Producer(WaitZone newArrivalZone) {
         this.arrivalZone = newArrivalZone;
     }
 
-    // cargo ships arrive at the arrival zone at random intervals.
-    public synchronized void run() {
+    // Cargo ships arrive at the arrival zone at random intervals.
+    public void run() {
         while(!isInterrupted()) {
             try {
+
+                // If currently there's no ship in the arrival zone
                 if(!arrivalZone.checkOccupied()) {
-                    // create a new cargo ship and send it to the arrvial zone.
+
+                    // Create a new cargo ship and send it to the arrvial zone.
                     Ship ship = Ship.getNewShip();
                     arrivalZone.arrive(ship);
 
-                    // let some time pass before the next ship arrives
+                    // Let some time pass before the next ship arrives
                     sleep(Params.arrivalLapse());
                 }
-
             } catch (InterruptedException e) {
                 this.interrupt();
             }
